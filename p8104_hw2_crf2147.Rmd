@@ -46,9 +46,18 @@ precip_2018 =
 #combining 2017 and 2018 data
 precipitation = 
   bind_rows(precip_2017, precip_2018) %>% 
- # mutate(month = replace(month.name)) (????)
+  mutate(month = factor(month, labels=c(month.name))) 
 ```
-Write up??
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2018? What was the median number of sports balls in a dumpster in 2017?
+
+The Mr. Trash Wheel data has `r nrow(trash_wheel)` observations, while the precipiation data from 2017 and 2018 has `r nrow(precipitation)` observations. Mr. Trash Wheel provides information on the `dumpster`, `month`, and `year` of the trash collection, as well as information on the quantity and content of the trash. The precipitation data only includes information on the `month`, `year`, and `precipitation` total. 
+
+In 2018, the total precipitation recorded was `r sum(pull(precip_2018, total))`. 
+
+The median number of sports balls per dumster in 2017 was `r filter(trash_wheel, year == 2017) %>% summarize(median(sports_balls))`. 
+
+
 
 
 #Problem 2
@@ -65,7 +74,7 @@ remove  prez_dem and prez_gop; and remove the day variable
 pols_month = 
   read_csv("data/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day")) %>% 
-  #code to change month to character (????)
+  mutate(month = factor(month, labels=c(month.name))) %>% 
   mutate(president = ifelse(prez_gop == 1, "republican", "democrat")) %>% 
   select(-prez_dem, -prez_gop, -day)
 ```
@@ -76,7 +85,8 @@ Second, clean the data in snp.csv using a similar process to the above. For cons
 snp = 
   read_csv("data/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
-  #code to change month to character (????)
+  arrange(month) %>% 
+  mutate(month = factor(month, labels=c(month.name))) %>% 
   select(year, month, close) %>% 
   arrange(year, month)
 ```
@@ -86,14 +96,41 @@ switching from “wide” to “long” format;
 ensuring that key variables have the same name;
 ensuring that key variables take the same values.
 ```{r}
+#reading in and cleaning unemployment data
 unemployment = 
   read_csv("data/unemployment.csv") %>% 
+  rename(year = Year, January = Jan, February = Feb, March = Mar, April = Apr, June = Jun, July = Jul, August = Aug, September = Sep, October = Oct, November = Nov, December = Dec) %>% 
   pivot_longer(
-    Jan:Dec,
-    names_to = "month",
-    values_to = "unemployment"
+   January:December,
+   names_to = "month",
+   values_to = "unemployment"
   ) %>% 
-  #code to change month to be compatible
+  mutate(year = factor(year))
+```
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+```{r}
+#merging snp and pols_month
+data_538 = 
+  left_join(pols_month, snp, by= c('year','month'))
+
+#merging data_538 and unemployment
+data_538 = 
+  left_join(data_538, unemployment, by= c('year','month'))
 ```
 
+
+
+#Problem 3
+
+Load and tidy the data. Note that, although these data may seem fairly well formatted initially, 
+the names of a categorical predictor and the case structure of string variables- names - changed over time; you’ll need to address this in your data cleaning. 
+Also, some rows seem duplicated, and these will need to be removed (hint: google something like “dplyr remove duplicate rows” to get started).
+```{r}
+popular_baby_names = 
+  read_csv("data/Popular_Baby_Names.csv")
+```
+
+```{r}
+table(popular_baby_names$Ethnicity)
+```
 
