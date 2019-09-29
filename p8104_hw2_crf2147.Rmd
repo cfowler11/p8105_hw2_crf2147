@@ -11,7 +11,7 @@ library(readxl)
 ```
 
 
-#Problem 1
+# Problem 1
 ```{r}
 #reading in relevant data from sheet 1
 trash_wheel = 
@@ -49,18 +49,15 @@ precipitation =
   mutate(month = factor(month, labels=c(month.name))) 
 ```
 
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2018? What was the median number of sports balls in a dumpster in 2017?
 
 The Mr. Trash Wheel data has `r nrow(trash_wheel)` observations, while the precipiation data from 2017 and 2018 has `r nrow(precipitation)` observations. Mr. Trash Wheel provides information on the `dumpster`, `month`, and `year` of the trash collection, as well as information on the quantity and content of the trash. The precipitation data only includes information on the `month`, `year`, and `precipitation` total. 
-
 In 2018, the total precipitation recorded was `r sum(pull(precip_2018, total))`. 
-
 The median number of sports balls per dumster in 2017 was `r filter(trash_wheel, year == 2017) %>% summarize(median(sports_balls))`. 
 
 
 
 
-#Problem 2
+# Problem 2
 
 First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; 
 
@@ -119,8 +116,10 @@ data_538 =
 ```
 
 
+First, the `pols-month` dataset contains information by date about the United States government's distribution between democrats and republicans in the House, Senate, and the president. Next, the `snp` dataset gives information by date on the S&P stock market value. Lastly, the `unemployment` dataset gives information by month and year on the percentage of unemployed individuals in the country. 
+Together, merged into `data_538`, we have a `r nrow(data_538)` rows by `r ncol(data_538)`columns dataset with information from `r min(pull(data_538, year))` to `r max(pull(data_538, year))`. This dataset has information organized by `year` and `month` about the distribution of democrats and republicans in the Senate and the House, the party of the president (`president`), the close value of the S&P stock price (`close`), and the unemployment rate (`unemployment`).
 
-#Problem 3
+# Problem 3
 
 Load and tidy the data. Note that, although these data may seem fairly well formatted initially, 
 the names of a categorical predictor and the case structure of string variables- names - changed over time; you’ll need to address this in your data cleaning. 
