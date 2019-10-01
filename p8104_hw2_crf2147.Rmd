@@ -140,7 +140,8 @@ olivia_table = popular_baby_names %>%
   mutate(
     ethnicity = replace(ethnicity, ethnicity == "asian and paci", "Asian and Pacific Islander"),
     ethnicity = replace(ethnicity, ethnicity == "black non hisp", "Black and Non Hispanic"),
-    ethnicity = replace(ethnicity, ethnicity == "white non hisp", "White and Non Hispanic")
+    ethnicity = replace(ethnicity, ethnicity == "white non hisp", "White and Non Hispanic"), 
+    ethnicity = replace(ethnicity, ethnicity == "hispanic", "Hispanic")
   ) %>% 
   rename(Ethnicity = ethnicity)
 
@@ -164,7 +165,8 @@ boys_table = popular_baby_names %>%
   mutate(
     ethnicity = replace(ethnicity, ethnicity == "asian and paci", "Asian and Pacific Islander"),
     ethnicity = replace(ethnicity, ethnicity == "black non hisp", "Black and Non Hispanic"),
-    ethnicity = replace(ethnicity, ethnicity == "white non hisp", "White and Non Hispanic")
+    ethnicity = replace(ethnicity, ethnicity == "white non hisp", "White and Non Hispanic"),
+    ethnicity = replace(ethnicity, ethnicity == "hispanic", "Hispanic")
   ) %>% 
   rename(Ethnicity = ethnicity)  
   
