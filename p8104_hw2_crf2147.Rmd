@@ -50,22 +50,14 @@ precipitation =
 ```
 
 
-The Mr. Trash Wheel data has `r nrow(trash_wheel)` observations, while the precipiation data from 2017 and 2018 has `r nrow(precipitation)` observations. Mr. Trash Wheel provides information on the `dumpster`, `month`, and `year` of the trash collection, as well as information on the quantity and content of the trash. The precipitation data only includes information on the `month`, `year`, and `precipitation` total. 
+The Mr. Trash Wheel data has `r nrow(trash_wheel)` observations and `r ncol(trash_wheel)` variables, while the precipiation data from 2017 and 2018 has `r nrow(precipitation)` observations and `r ncol(precipitation)` variables. Mr. Trash Wheel provides information on the `dumpster`, `month`, and `year` of the trash collection, as well as information on the quantity and content of the trash. The precipitation data only includes information on the `month`, `year`, and `precipitation` total. 
 In 2018, the total precipitation recorded was `r sum(pull(precip_2018, total))`. 
 The median number of sports balls per dumster in 2017 was `r filter(trash_wheel, year == 2017) %>% summarize(median(sports_balls))`. 
-
-? Give number of vars
 
 
 # Problem 2
 
-First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; 
 
-replace month number with month name; 
-
-create a president variable taking values gop and dem, 
-
-remove  prez_dem and prez_gop; and remove the day variable
 ```{r}
 #reading and cleaning pols_month
 pols_month = 
@@ -75,7 +67,6 @@ pols_month =
   mutate(president = ifelse(prez_gop == 1, "republican", "democrat")) %>% 
   select(-prez_dem, -prez_gop, -day)
 ```
-Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
 ```{r}
 #reading in and cleaning snp data
@@ -88,10 +79,7 @@ snp =
   arrange(year, month)
 ```
 
-tidy the unemployment data so that it can be merged with the previous datasets:
-switching from “wide” to “long” format; 
-ensuring that key variables have the same name;
-ensuring that key variables take the same values.
+
 ```{r}
 #reading in and cleaning unemployment data
 unemployment = 
@@ -104,7 +92,7 @@ unemployment =
   ) %>% 
   mutate(year = factor(year))
 ```
-Join the datasets by merging snp into pols, and merging unemployment into the result.
+
 ```{r}
 #merging snp and pols_month
 data_538 = 
@@ -116,20 +104,16 @@ data_538 =
 ```
 
 
-First, the `pols-month` dataset contains information by date about the United States government's distribution between democrats and republicans in the House, Senate, and the president. Next, the `snp` dataset gives information by date on the S&P stock market value. Lastly, the `unemployment` dataset gives information by month and year on the percentage of unemployed individuals in the country. 
+First, the `r nrow(pols_month)` rows by `r ncol(pols_month)` variables `pols-month` dataset contains information by date about the United States government's distribution between democrats and republicans in the House, Senate, and the president. Next, the `r nrow(snp)` rows by `r ncol(snp)` variables `snp` dataset gives information by date on the S&P stock market value. Lastly, the `r nrow(unemployment)` rows by `r ncol(unemployment)` variables `unemployment` dataset gives information by month and year on the percentage of unemployed individuals in the country. 
 Together, merged into `data_538`, we have a `r nrow(data_538)` rows by `r ncol(data_538)`columns dataset with information from `r min(pull(data_538, year))` to `r max(pull(data_538, year))`. This dataset has information organized by `year` and `month` about the distribution of democrats and republicans in the Senate and the House, the party of the president (`president`), the close value of the S&P stock price (`close`), and the unemployment rate (`unemployment`).
 
 
-? Give number of vars and rows for other datasets
 
 
 
 
 # Problem 3
 
-Load and tidy the data. Note that, although these data may seem fairly well formatted initially, 
-the names of a categorical predictor and the case structure of string variables- names - changed over time; you’ll need to address this in your data cleaning. 
-Also, some rows seem duplicated, and these will need to be removed (hint: google something like “dplyr remove duplicate rows” to get started).
 ```{r}
 #reading in and cleaning baby names data
 popular_baby_names = 
@@ -145,6 +129,7 @@ popular_baby_names =
   distinct()
 ```
 ```{r}
+#creating new dataframe for Olivia only, printing table 
 olivia_table = popular_baby_names %>% 
   filter(childs_first_name == 'olivia') %>% 
   select (year_of_birth, ethnicity, rank) %>% 
@@ -164,9 +149,12 @@ knitr::kable(olivia_table)
 
 
 ```{r}
+#creating new dataframe for most popular boys names, printing table
 boys_table = popular_baby_names %>% 
-  filter(gender == 'MALE') %>% 
-  filter(rank == 1) %>% 
+  filter(
+    gender == 'MALE',
+    rank == 1
+    ) %>% 
   select(year_of_birth, ethnicity, childs_first_name) %>% 
   mutate(childs_first_name = str_to_title(childs_first_name)) %>% 
   pivot_wider(
@@ -185,7 +173,22 @@ knitr::kable(boys_table)
 ```
 
 
-
+```{r}
+#Creating scatterplot for white non-hisp boys names in 2016
+popular_baby_names %>% 
+  filter(
+    gender == 'MALE',
+    ethnicity == 'white non hisp',
+    year_of_birth == 2016
+    ) %>% 
+  ggplot(aes(y = count, x = rank)) +
+  geom_point() + 
+  labs(
+    title = 'White Non-Hispanic Boys Names in 2016',
+    x = "Name Rank",
+    y = "Name Frequency"
+  )
+```
 
 
 
